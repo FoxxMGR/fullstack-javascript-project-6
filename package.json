@@ -11,7 +11,7 @@
       "prebuild": "rm -rf dist",
       "test": "jest --verbose --runInBand",
       "build": "webpack",
-      "start": "fastify start server/plugin.js -l info -a 0.0.0.0 -p ${PORT:-3000}"
+      "start": "node -r dotenv/config ./node_modules/.bin/fastify start server/plugin.js -l info -a 0.0.0.0 -p ${PORT:-3000}"
    },
    "jest": {
       "modulePathIgnorePatterns": [
@@ -55,11 +55,10 @@
       "pug": "^3.0.3",
       "qs": "^6.15.0",
       "rollbar": "^3.1.0",
-      "sqlite3": "^6.0.1",
+      "sqlite3": "^5.1.7",
       "webpack": "^5.105.4"
    },
-   "overrides": {
-      "better-sqlite3": false
+  
    },
    "devDependencies": {
       "@jest/globals": "^30.3.0",
