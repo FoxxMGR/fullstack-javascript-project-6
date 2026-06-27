@@ -31,14 +31,13 @@
       "url": "https://github.com/FoxxMGR/fullstack-javascript-project-6/issues"
    },
    "homepage": "https://github.com/FoxxMGR/fullstack-javascript-project-6.git#readme",
-   "dependencies": {
+    "dependencies": {
       "@fastify/formbody": "^8.0.2",
       "@fastify/passport": "^3.0.2",
       "@fastify/secure-session": "^8.3.0",
       "@fastify/sensible": "^6.0.4",
       "@fastify/static": "^9.0.0",
       "@fastify/view": "^11.1.1",
-      "@vscode/sqlite3": "^5.1.2",
       "bootstrap": "^5.3.8",
       "fastify": "^5.8.2",
       "fastify-cli": "^7.4.1",
@@ -61,6 +60,9 @@
       "rollbar": "^3.1.0",
       "sqlite3": "^6.0.1",
       "webpack": "^5.105.4"
+   },
+   "overrides": {
+      "better-sqlite3": false
    },
    "devDependencies": {
       "@jest/globals": "^30.3.0",
