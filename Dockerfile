@@ -11,6 +11,7 @@ WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
 
+RUN echo "cache bust 2026-06-27"
 RUN npm config set legacy-peer-deps true && npm ci
 
 COPY . .
