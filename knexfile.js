@@ -10,7 +10,7 @@ const migrations = {
 };
 
 export const development = {
-  client: 'better-sqlite3',
+  client: 'sqlite3',
   connection: {
     filename: path.resolve(__dirname, 'database.sqlite'),
   },
@@ -19,7 +19,7 @@ export const development = {
 };
 
 export const test = {
-  client: 'better-sqlite3',
+  client: 'sqlite3',
   connection: ':memory:',
   useNullAsDefault: true,
   // debug: true,

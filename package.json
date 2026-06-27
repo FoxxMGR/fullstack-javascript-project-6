@@ -38,7 +38,6 @@
       "@fastify/sensible": "^6.0.4",
       "@fastify/static": "^9.0.0",
       "@fastify/view": "^11.1.1",
-      "better-sqlite3": "^11.8.0",
       "bootstrap": "^5.3.8",
       "dotenv": "^17.3.1",
       "fastify": "^5.8.2",
@@ -56,12 +55,8 @@
       "pug": "^3.0.3",
       "qs": "^6.15.0",
       "rollbar": "^3.1.0",
+      "sqlite3": "^5.1.7",
       "webpack": "^5.105.4"
-   },
-   "overrides": {
-      "fastify-objectionjs": {
-         "better-sqlite3": "^11.8.0"
-      }
    },
    "devDependencies": {
       "@jest/globals": "^30.3.0",
