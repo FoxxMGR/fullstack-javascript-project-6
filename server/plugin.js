@@ -10,11 +10,12 @@ import fastifyFormbody from '@fastify/formbody';
 import fastifySecureSession from '@fastify/secure-session';
 import fastifyPassport from '@fastify/passport';
 import fastifySensible from '@fastify/sensible';
+import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes';
+import fastifyMethodOverride from 'fastify-method-override';
 import fastifyObjectionjs from 'fastify-objectionjs';
 import qs from 'qs';
 import Pug from 'pug';
 import i18next from 'i18next';
-import Rollbar from 'rollbar';
 
 import ru from './locales/ru.js';
 import en from './locales/en.js';
@@ -81,24 +82,7 @@ const addHooks = (app) => {
 const registerPlugins = async (app) => {
   await app.register(fastifySensible);
   // await app.register(fastifyErrorPage);
-
-  const routeNames = new Map();
-  app.addHook('onRoute', (routeOptions) => {
-    if (routeOptions.name && !routeNames.has(routeOptions.name)) {
-      routeNames.set(routeOptions.name, routeOptions.url);
-    }
-  });
-  app.decorate('reverse', (name, params = {}) => {
-    let url = routeNames.get(name);
-    if (!url) {
-      throw new Error(`Route with name ${name} is not registered`);
-    }
-    Object.entries(params).forEach(([key, value]) => {
-      url = url.replace(`:${key}`, value);
-    });
-    return url;
-  });
-
+  await app.register(fastifyReverseRoutes);
   await app.register(fastifyFormbody, { parser: qs.parse });
   await app.register(fastifySecureSession, {
     secret: process.env.SESSION_KEY,
@@ -124,6 +108,7 @@ const registerPlugins = async (app) => {
   // @ts-ignore
   )(...args));
 
+  await app.register(fastifyMethodOverride);
   await app.register(fastifyObjectionjs, {
     knexConfig: knexConfig[mode],
     models,
@@ -136,15 +121,6 @@ export const options = {
 
 // eslint-disable-next-line no-unused-vars
 export default async (app, _options) => {
-  if (process.env.ROLLBAR_TOKEN) {
-    const rollbar = new Rollbar({
-      accessToken: process.env.ROLLBAR_TOKEN,
-      captureUncaught: true,
-      captureUnhandledRejections: true,
-    });
-    app.setErrorHandler(rollbar.errorHandler());
-  }
-
   await registerPlugins(app);
 
   await setupLocalization();
