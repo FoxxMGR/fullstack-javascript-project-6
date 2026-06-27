@@ -1,0 +1,65 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.tasks.index.header')
+
+block content
+  if isAuthenticated()
+    p
+      a.btn.btn-primary(href=route('newTask'))= t('views.tasks.index.new')
+
+  .card.mb-4
+    .card-body
+      h5= t('views.tasks.index.filter')
+      form(method='get' action=route('tasks'))
+        .row
+          .col-md-3
+            .mb-3
+              label(for='statusId')= t('views.tasks.index.status')
+              select.form-control(id='statusId' name='statusId')
+                option(value='')= t('views.tasks.index.allStatuses')
+                each status in statuses
+                  option(value=status.id selected=filter && filter.statusId === String(status.id))= status.name
+          .col-md-3
+            .mb-3
+              label(for='executorId')= t('views.tasks.index.executor')
+              select.form-control(id='executorId' name='executorId')
+                option(value='')= t('views.tasks.index.allExecutors')
+                each user in users
+                  option(value=user.id selected=filter && filter.executorId === String(user.id))= `${user.firstName} ${user.lastName}`
+          .col-md-3
+            .mb-3
+              label(for='labelId')= t('views.tasks.index.labels')
+              select.form-control(id='labelId' name='labelId')
+                option(value='')= t('views.tasks.index.allLabels')
+                each label in labels
+                  option(value=label.id selected=filter && filter.labelId === String(label.id))= label.name
+          .col-md-3
+            .mb-3
+              label(for='isCreatorUser')= t('views.tasks.index.myTasks')
+              .form-check
+                input.form-check-input(type='checkbox' id='isCreatorUser' name='isCreatorUser' checked=filter && filter.isCreatorUser === 'on')
+          .col-md-12
+            button.btn.btn-primary(type='submit')= t('views.tasks.index.apply')
+
+  table.table.table-striped
+    thead
+      tr
+        th= t('views.tasks.index.id')
+        th= t('views.tasks.index.name')
+        th= t('views.tasks.index.status')
+        th= t('views.tasks.index.creator')
+        th= t('views.tasks.index.executor')
+        th= t('views.tasks.index.labels')
+        th= t('views.tasks.index.createdAt')
+    tbody
+      each task in tasks
+        tr
+          td= task.id
+          td
+            a(href=route('showTask', { id: task.id }))= task.name
+          td= task.status ? task.status.name : ''
+          td= task.creator ? `${task.creator.firstName} ${task.creator.lastName}` : ''
+          td= task.executor ? `${task.executor.firstName} ${task.executor.lastName}` : ''
+          td= task.labels ? task.labels.map(l => l.name).join(', ') : ''
+          td= formatDate(task.createdAt)

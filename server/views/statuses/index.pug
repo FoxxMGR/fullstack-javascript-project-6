@@ -1,0 +1,28 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.statuses.index.header')
+
+block content
+  if isAuthenticated()
+    p
+      a.btn.btn-primary(href=route('newStatus'))= t('views.statuses.index.new')
+  table.table.table-striped
+    thead
+      tr
+        th= t('views.statuses.index.id')
+        th= t('views.statuses.index.name')
+        th= t('views.statuses.index.createdAt')
+    tbody
+      each status in statuses
+        tr
+          td= status.id
+          td= status.name
+          td= formatDate(status.createdAt)
+          if isAuthenticated()
+            td
+              a(href=route('editStatus', { id: status.id }))= t('views.statuses.index.edit')
+              |
+              form(action=route('deleteStatus', { id: status.id }) method='post' style='display:inline')
+                input(name="_method" type="hidden" value="delete")
+                input(type='submit' value=t('views.statuses.index.delete'))

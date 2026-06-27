@@ -3,31 +3,45 @@
 import i18next from 'i18next';
 
 export default (app) => {
+  const signOut = (req, reply) => {
+    req.logOut();
+    req.flash('info', i18next.t('flash.session.delete.success'));
+    reply.redirect(app.reverse('root'));
+  };
+
   app
     .get('/session/new', { name: 'newSession' }, (req, reply) => {
       const signInForm = {};
       reply.render('session/new', { signInForm });
     })
-    .post('/session', { name: 'session' }, app.fp.authenticate('form', async (req, reply, err, user) => {
-      if (err) {
-        return app.httpErrors.internalServerError(err);
-      }
-      if (!user) {
-        const signInForm = req.body.data;
-        const errors = {
-          email: [{ message: i18next.t('flash.session.create.error') }],
-        };
-        reply.render('session/new', { signInForm, errors });
+    .post('/session', { name: 'session' }, async (req, reply) => {
+      if (req.body?._method === 'DELETE') {
+        signOut(req, reply);
         return reply;
       }
-      await req.logIn(user);
-      req.flash('success', i18next.t('flash.session.create.success'));
-      reply.redirect(app.reverse('root'));
-      return reply;
-    }))
+
+      const authenticate = app.fp.authenticate('form', async (req2, reply2, err, user) => {
+        if (err) {
+          return app.httpErrors.internalServerError(err);
+        }
+        if (!user) {
+          const signInForm = req2.body.data;
+          const errors = {
+            email: [{ message: i18next.t('flash.session.create.error') }],
+          };
+          reply2.render('session/new', { signInForm, errors });
+          return reply2;
+        }
+        await req2.logIn(user);
+        req2.flash('success', i18next.t('flash.session.create.success'));
+        reply2.redirect(app.reverse('root'));
+        return reply2;
+      });
+
+      return authenticate(req, reply);
+    })
     .delete('/session', (req, reply) => {
-      req.logOut();
-      req.flash('info', i18next.t('flash.session.delete.success'));
-      reply.redirect(app.reverse('root'));
+      signOut(req, reply);
+      return reply;
     });
 };

@@ -13,6 +13,20 @@ export default (app) => {
       const user = new app.objection.models.user();
       reply.render('users/new', { user });
     })
+    .get('/users/:id/edit', {
+      name: 'editUser',
+      preValidation: app.authenticate,
+    }, async (req, reply) => {
+      const { id } = req.params;
+      if (String(req.user.id) !== String(id)) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('users'));
+        return reply;
+      }
+      const user = await app.objection.models.user.query().findById(id);
+      reply.render('users/edit', { user });
+      return reply;
+    })
     .post('/users', async (req, reply) => {
       const user = new app.objection.models.user();
       user.$set(req.body.data);
@@ -25,6 +39,53 @@ export default (app) => {
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.users.create.error'));
         reply.render('users/new', { user, errors: data });
+      }
+
+      return reply;
+    })
+    .patch('/users/:id', {
+      name: 'patchUser',
+      preValidation: app.authenticate,
+    }, async (req, reply) => {
+      const { id } = req.params;
+      if (String(req.user.id) !== String(id)) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('users'));
+        return reply;
+      }
+
+      try {
+        const user = await app.objection.models.user.query().findById(id);
+        await user.$query().patch(req.body.data);
+        req.flash('info', i18next.t('flash.users.update.success'));
+        reply.redirect(app.reverse('users'));
+      } catch ({ data }) {
+        const user = await app.objection.models.user.query().findById(id);
+        req.flash('error', i18next.t('flash.users.update.error'));
+        reply.render('users/edit', { user, errors: data });
+      }
+
+      return reply;
+    })
+    .delete('/users/:id', {
+      name: 'deleteUser',
+      preValidation: app.authenticate,
+    }, async (req, reply) => {
+      const { id } = req.params;
+      if (String(req.user.id) !== String(id)) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('users'));
+        return reply;
+      }
+
+      try {
+        await app.objection.models.user.query().deleteById(id);
+        req.logOut();
+        req.flash('info', i18next.t('flash.users.delete.success'));
+        reply.redirect(app.reverse('root'));
+      } catch (err) {
+        req.flash('error', i18next.t('flash.users.delete.error'));
+        reply.redirect(app.reverse('editUser', { id }));
       }
 
       return reply;

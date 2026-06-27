@@ -14,13 +14,19 @@ module.exports = class User extends unique(BaseModel) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['email', 'password'],
+      required: ['email', 'password', 'firstName', 'lastName'],
       properties: {
         id: { type: 'integer' },
         email: { type: 'string', minLength: 1 },
         password: { type: 'string', minLength: 3 },
+        firstName: { type: 'string', minLength: 1 },
+        lastName: { type: 'string', minLength: 1 },
       },
     };
+  }
+
+  static get relationMappings() {
+    return {};
   }
 
   set password(value) {

@@ -22,15 +22,8 @@ describe('test users CRUD', () => {
     knex = app.objection.knex;
     models = app.objection.models;
 
-    // TODO: пока один раз перед тестами
-    // тесты не должны зависеть друг от друга
-    // перед каждым тестом выполняем миграции
-    // и заполняем БД тестовыми данными
     await knex.migrate.latest();
     await prepareData(app);
-  });
-
-  beforeEach(async () => {
   });
 
   it('index', async () => {
@@ -64,16 +57,122 @@ describe('test users CRUD', () => {
     expect(response.statusCode).toBe(302);
     const expected = {
       ..._.omit(params, 'password'),
+      firstName: params.firstName,
+      lastName: params.lastName,
       passwordDigest: encrypt(params.password),
     };
     const user = await models.user.query().findOne({ email: params.email });
     expect(user).toMatchObject(expected);
   });
 
-  afterEach(async () => {
-    // Пока Segmentation fault: 11
-    // после каждого теста откатываем миграции
-    // await knex.migrate.rollback();
+  it('edit', async () => {
+    const user = await models.user.query().findOne({
+      email: testData.users.existing.email,
+    });
+
+    const loginResponse = await app.inject({
+      method: 'POST',
+      url: app.reverse('session'),
+      payload: { data: testData.users.existing },
+    });
+    const [sessionCookie] = loginResponse.cookies;
+    const cookie = { [sessionCookie.name]: sessionCookie.value };
+
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('editUser', { id: user.id }),
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('update', async () => {
+    const user = await models.user.query().findOne({
+      email: testData.users.existing.email,
+    });
+
+    const loginResponse = await app.inject({
+      method: 'POST',
+      url: app.reverse('session'),
+      payload: { data: testData.users.existing },
+    });
+    const [sessionCookie] = loginResponse.cookies;
+    const cookie = { [sessionCookie.name]: sessionCookie.value };
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/users/${user.id}`,
+      payload: { data: { firstName: 'Updated', lastName: 'Name', email: user.email } },
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+    const updatedUser = await models.user.query().findById(user.id);
+    expect(updatedUser.firstName).toBe('Updated');
+    expect(updatedUser.lastName).toBe('Name');
+  });
+
+  it('edit forbidden for other user', async () => {
+    const user = await models.user.query().findOne({
+      email: testData.users.existing.email,
+    });
+
+    const loginResponse = await app.inject({
+      method: 'POST',
+      url: app.reverse('session'),
+      payload: { data: testData.users.existing },
+    });
+    const [sessionCookie] = loginResponse.cookies;
+    const cookie = { [sessionCookie.name]: sessionCookie.value };
+
+    const otherUser = await models.user.query()
+      .where('email', '!=', user.email)
+      .first();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('editUser', { id: otherUser.id }),
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+  });
+
+  it('delete own account', async () => {
+    const deleteUserData = {
+      firstName: 'Delete',
+      lastName: 'Me',
+      email: 'delete_me@test.com',
+      password: 'test123',
+    };
+    const insertData = {
+      firstName: deleteUserData.firstName,
+      lastName: deleteUserData.lastName,
+      email: deleteUserData.email,
+      passwordDigest: encrypt(deleteUserData.password),
+    };
+    await knex('users').insert(insertData);
+
+    const loginResponse = await app.inject({
+      method: 'POST',
+      url: app.reverse('session'),
+      payload: { data: { email: deleteUserData.email, password: deleteUserData.password } },
+    });
+    const [sessionCookie] = loginResponse.cookies;
+    const cookie = { [sessionCookie.name]: sessionCookie.value };
+
+    const user = await models.user.query().findOne({ email: deleteUserData.email });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/users/${user.id}`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+    const deletedUser = await models.user.query().findById(user.id);
+    expect(deletedUser).toBeUndefined();
   });
 
   afterAll(async () => {
