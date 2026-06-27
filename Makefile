@@ -1,7 +1,8 @@
 setup: prepare install db-migrate
 
 install:
-	npm install --legacy-peer-deps --ignore-scripts
+	rm -rf node_modules
+	npm install --legacy-peer-deps --omit=optional
 	npm rebuild sqlite3
 
 db-migrate:

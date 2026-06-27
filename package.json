@@ -5,7 +5,7 @@
    "description": "",
    "main": "./server/plugin.js",
    "engines": {
-       "node": ">=18.x"
+      "node": ">=18.x"
    },
    "scripts": {
       "prebuild": "rm -rf dist",
@@ -18,7 +18,7 @@
          "<rootDir>/__tests__/helpers/"
       ],
       "setupFiles": [
-         "dotenv/config"
+         "./jest-setup.js"
       ]
    },
    "author": "",
@@ -39,6 +39,7 @@
       "@fastify/static": "^9.0.0",
       "@fastify/view": "^11.1.1",
       "bootstrap": "^5.3.8",
+      "dotenv": "^17.3.1",
       "fastify": "^5.8.2",
       "fastify-cli": "^7.4.1",
       "fastify-objectionjs": "^2.0.1",
@@ -60,13 +61,12 @@
    "overrides": {
       "better-sqlite3": false
    },
-    "devDependencies": {
+   "devDependencies": {
       "@jest/globals": "^30.3.0",
       "@types/jest": "^30.0.0",
       "@types/node": "^25.5.0",
       "ajv": "^8.17.0",
       "css-loader": "^7.1.4",
-      "dotenv": "^17.3.1",
       "eslint": "^8.0.0",
       "eslint-config-airbnb-base": "^15.0.0",
       "eslint-plugin-import": "^2.32.0",
