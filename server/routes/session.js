@@ -11,7 +11,6 @@ export default (app) => {
     .post('/session', { name: 'session' }, async (req, reply) => {
       if (req.body?._method === 'DELETE') {
         req.logOut();
-        req.flash('info', i18next.t('flash.session.delete.success'));
         reply.redirect(app.reverse('root'));
         return reply;
       }
@@ -29,7 +28,6 @@ export default (app) => {
           return reply2;
         }
         await req2.logIn(user);
-        req2.flash('success', i18next.t('flash.session.create.success'));
         reply2.redirect(app.reverse('root'));
         return reply2;
       });
@@ -38,7 +36,6 @@ export default (app) => {
     })
     .delete('/session', (req, reply) => {
       req.logOut();
-      req.flash('info', i18next.t('flash.session.delete.success'));
       reply.redirect(app.reverse('root'));
       return reply;
     });

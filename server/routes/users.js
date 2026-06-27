@@ -20,10 +20,9 @@ export default (app) => {
       try {
         const validUser = await app.objection.models.user.fromJson(req.body.data);
         await app.objection.models.user.query().insert(validUser);
-        req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect(app.reverse('root'));
       } catch (err) {
-        req.log.error({ err }, 'User creation failed');
+        req.log.error({ err, body: req.body }, 'User creation failed');
         reply.render('users/new', { user, errors: err.data });
       }
 

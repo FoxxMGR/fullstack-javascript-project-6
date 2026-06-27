@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fastifyStatic from '@fastify/static';
 import fastifyView from '@fastify/view';
-import fastifyFormbody from '@fastify/formbody';
 import fastifySecureSession from '@fastify/secure-session';
 import fastifyPassport from '@fastify/passport';
 import fastifySensible from '@fastify/sensible';
@@ -92,7 +91,13 @@ const registerPlugins = async (app) => {
     return url;
   });
 
-  await app.register(fastifyFormbody, { parser: qs.parse });
+  app.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'buffer' }, (req, body, done) => {
+    try {
+      done(null, qs.parse(body.toString()));
+    } catch (err) {
+      done(err);
+    }
+  });
   await app.register(fastifySecureSession, {
     secret: process.env.SESSION_KEY,
     cookie: {
