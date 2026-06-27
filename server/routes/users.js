@@ -22,9 +22,9 @@ export default (app) => {
         await app.objection.models.user.query().insert(validUser);
         req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect(app.reverse('root'));
-      } catch ({ data }) {
-        req.flash('error', i18next.t('flash.users.create.error'));
-        reply.render('users/new', { user, errors: data });
+      } catch (err) {
+        req.log.error({ err }, 'User creation failed');
+        reply.render('users/new', { user, errors: err.data });
       }
 
       return reply;
