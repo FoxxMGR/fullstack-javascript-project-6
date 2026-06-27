@@ -8,7 +8,7 @@ import fastifyFormbody from '@fastify/formbody';
 import fastifySecureSession from '@fastify/secure-session';
 import fastifyPassport from '@fastify/passport';
 import fastifySensible from '@fastify/sensible';
-import fastifyObjectionjs from 'fastify-objectionjs';
+import knex from 'knex';
 import qs from 'qs';
 import Pug from 'pug';
 import i18next from 'i18next';
@@ -118,10 +118,12 @@ const registerPlugins = async (app) => {
   // @ts-ignore
   )(...args));
 
-  await app.register(fastifyObjectionjs, {
-    knexConfig: knexConfig[mode],
-    models,
-  });
+  const db = knex(knexConfig[mode]);
+  models.forEach((m) => m.knex(db));
+  const modelsByName = {};
+  models.forEach((m) => { modelsByName[m.name.charAt(0).toLowerCase() + m.name.slice(1)] = m; });
+  app.decorate('objection', { knex: db, models: modelsByName });
+  app.addHook('onClose', async () => { await db.destroy(); });
 };
 
 export const options = {
