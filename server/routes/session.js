@@ -9,7 +9,7 @@ export default (app) => {
       reply.render('session/new', { signInForm });
     })
     .post('/session', { name: 'session' }, async (req, reply) => {
-      if (req.body?._method === 'DELETE') {
+      if (req.body?._method?.toUpperCase() === 'DELETE') {
         req.logOut();
         req.flash('info', i18next.t('flash.session.delete.success'));
         reply.redirect(app.reverse('root'));
