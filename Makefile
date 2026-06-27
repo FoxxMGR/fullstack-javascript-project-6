@@ -1,7 +1,8 @@
 setup: prepare install db-migrate
 
 install:
-	npm install --legacy-peer-deps
+	npm install --legacy-peer-deps --ignore-scripts
+	npm rebuild sqlite3
 
 db-migrate:
 	npx knex migrate:latest

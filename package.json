@@ -60,7 +60,7 @@
    "overrides": {
       "better-sqlite3": false
    },
-   "devDependencies": {
+    "devDependencies": {
       "@jest/globals": "^30.3.0",
       "@types/jest": "^30.0.0",
       "@types/node": "^25.5.0",
