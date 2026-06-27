@@ -30,6 +30,8 @@ export default {
       },
     },
     views: {
+      email: 'Email',
+      password: 'Password',
       session: {
         new: {
           signIn: 'Login',
