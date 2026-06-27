@@ -3,15 +3,11 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fastifyStatic from '@fastify/static';
-// NOTE: не поддердивает fastify 4.x
-// import fastifyErrorPage from 'fastify-error-page';
 import fastifyView from '@fastify/view';
 import fastifyFormbody from '@fastify/formbody';
 import fastifySecureSession from '@fastify/secure-session';
 import fastifyPassport from '@fastify/passport';
 import fastifySensible from '@fastify/sensible';
-import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes';
-import fastifyMethodOverride from 'fastify-method-override';
 import fastifyObjectionjs from 'fastify-objectionjs';
 import qs from 'qs';
 import Pug from 'pug';
@@ -29,7 +25,6 @@ import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 const __dirname = fileURLToPath(path.dirname(import.meta.url));
 
 const mode = process.env.NODE_ENV || 'development';
-// const isDevelopment = mode === 'development';
 
 const setUpViews = (app) => {
   const helpers = getHelpers(app);
@@ -63,7 +58,6 @@ const setupLocalization = async () => {
     .init({
       lng: 'en',
       fallbackLng: 'ru',
-      // debug: isDevelopment,
       resources: {
         ru,
         en,
@@ -81,8 +75,24 @@ const addHooks = (app) => {
 
 const registerPlugins = async (app) => {
   await app.register(fastifySensible);
-  // await app.register(fastifyErrorPage);
-  await app.register(fastifyReverseRoutes);
+
+  const routeNames = new Map();
+  app.addHook('onRoute', (routeOptions) => {
+    if (routeOptions.name && !routeNames.has(routeOptions.name)) {
+      routeNames.set(routeOptions.name, routeOptions.url);
+    }
+  });
+  app.decorate('reverse', (name, params = {}) => {
+    let url = routeNames.get(name);
+    if (!url) {
+      throw new Error(`Route with name ${name} is not registered`);
+    }
+    Object.entries(params).forEach(([key, value]) => {
+      url = url.replace(`:${key}`, value);
+    });
+    return url;
+  });
+
   await app.register(fastifyFormbody, { parser: qs.parse });
   await app.register(fastifySecureSession, {
     secret: process.env.SESSION_KEY,
@@ -108,7 +118,6 @@ const registerPlugins = async (app) => {
   // @ts-ignore
   )(...args));
 
-  await app.register(fastifyMethodOverride);
   await app.register(fastifyObjectionjs, {
     knexConfig: knexConfig[mode],
     models,
