@@ -8,14 +8,14 @@ block content
           .col
             .mb-3
               label(for="executorId")= t('views.tasks.executor')
-              select.form-control(name="executorId" id="executorId" onchange="this.form.submit()")
+              select.form-control(name="executorId" id="data_executor")
                 option(value="")
                 each user in users
                   option(value=user.id selected=(String(filters.executorId) === String(user.id)))= `${user.firstName} ${user.lastName}`
           .col
             .mb-3
               label(for="statusId")= t('views.tasks.status')
-              select.form-control(name="statusId" id="statusId" onchange="this.form.submit()")
+              select.form-control(name="statusId" id="data_status")
                 option(value="")
                 each status in statuses
                   option(value=status.id selected=(String(filters.statusId) === String(status.id)))= status.name
