@@ -18,6 +18,9 @@ export default {
           error: 'Не удалось зарегистрировать',
           success: 'Пользователь успешно зарегистрирован',
         },
+        update: {
+          success: 'Пользователь обновлён',
+        },
       },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
@@ -46,6 +49,7 @@ export default {
         firstName: 'Имя',
         lastName: 'Фамилия',
         email: 'Email',
+        edit: 'Изменить',
         createdAt: 'Дата создания',
         new: {
           submit: 'Сохранить',

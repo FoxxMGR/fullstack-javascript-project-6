@@ -18,6 +18,9 @@ export default {
           error: 'Failed to register',
           success: 'User registered successfully',
         },
+        update: {
+          success: 'User updated successfully',
+        },
       },
       authError: 'Access denied! Please login',
     },
@@ -46,6 +49,7 @@ export default {
         firstName: 'First Name',
         lastName: 'Last Name',
         email: 'Email',
+        edit: 'Edit',
         createdAt: 'Created at',
         new: {
           submit: 'Register',

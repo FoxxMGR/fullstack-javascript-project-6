@@ -28,5 +28,23 @@ export default (app) => {
       }
 
       return reply;
-    });
+    })
+    .get('/users/:id/edit', { name: 'editUser' }, async (req, reply) => {
+      const user = await app.objection.models.user.query().findById(req.params.id);
+      reply.render('users/edit', { user });
+      return reply;
+    })
+    .post('/users/:id', { name: 'updateUser' }, async (req, reply) => {
+      const user = await app.objection.models.user.query().findById(req.params.id);
+      try {
+        await user.$query().patch(req.body.data);
+        req.flash('info', i18next.t('flash.users.update.success'));
+        reply.redirect(app.reverse('users'));
+      } catch (err) {
+        req.log.error({ err, body: req.body }, 'User update failed');
+        reply.render('users/edit', { user, errors: err.data });
+      }
+
+      return reply;
+    })
 };
