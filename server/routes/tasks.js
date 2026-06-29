@@ -19,31 +19,34 @@ export default (app) => {
       return reply;
     })
     .post('/tasks', { name: 'createTask' }, async (req, reply) => {
-      const task = new app.objection.models.task();
-      task.$set(req.body.data);
-      const labelIds = req.body.data.labels || [];
+      const statuses = await app.objection.models.taskStatus.query();
+      const users = await app.objection.models.user.query();
+      const labels = await app.objection.models.label.query();
+      const rawLabels = req.body.data.labels;
+      const labelIds = Array.isArray(rawLabels) ? rawLabels.map(Number) : (rawLabels ? [Number(rawLabels)] : []);
 
       try {
-        const validTask = await app.objection.models.task.fromJson({
+        const statusId = Number(req.body.data.statusId);
+        const executorId = req.body.data.executorId ? Number(req.body.data.executorId) : null;
+        const [taskId] = await app.objection.knex('tasks').insert({
           name: req.body.data.name,
           description: req.body.data.description || '',
-          statusId: Number(req.body.data.statusId),
-          creatorId: req.user.id,
-          executorId: req.body.data.executorId ? Number(req.body.data.executorId) : null,
+          status_id: statusId,
+          creator_id: req.user.id,
+          executor_id: executorId,
         });
-        const insertedTask = await app.objection.models.task.query().insert(validTask);
         if (labelIds.length > 0) {
-          await insertedTask.$relatedQuery('labels').relate(labelIds);
+          const inserts = labelIds.map((id) => ({ task_id: taskId, label_id: id }));
+          await app.objection.knex('task_labels').insert(inserts);
         }
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (err) {
         req.log.error({ err, body: req.body }, 'Task creation failed');
+        const task = new app.objection.models.task();
+        task.$set(req.body.data);
         req.flash('error', i18next.t('flash.tasks.create.error'));
-        const statuses = await app.objection.models.taskStatus.query();
-        const users = await app.objection.models.user.query();
-        const labels = await app.objection.models.label.query();
-        reply.render('tasks/new', { task, statuses, users, labels, errors: err.data });
+        reply.redirect(app.reverse('tasks'));
       }
 
       return reply;
@@ -66,36 +69,35 @@ export default (app) => {
       return reply;
     })
     .post('/tasks/:id', { name: 'updateTask' }, async (req, reply) => {
-      const task = await app.objection.models.task.query().findById(req.params.id);
-      const labelIds = req.body.data.labels || [];
+      const rawLabels = req.body.data.labels;
+      const labelIds = Array.isArray(rawLabels) ? rawLabels.map(Number) : (rawLabels ? [Number(rawLabels)] : []);
 
       try {
-        await task.$query().patch({
+        await app.objection.knex('tasks').where('id', req.params.id).update({
           name: req.body.data.name,
           description: req.body.data.description || '',
-          statusId: Number(req.body.data.statusId),
-          executorId: req.body.data.executorId ? Number(req.body.data.executorId) : null,
+          status_id: Number(req.body.data.statusId),
+          executor_id: req.body.data.executorId ? Number(req.body.data.executorId) : null,
         });
-        await task.$relatedQuery('labels').unrelate();
+        await app.objection.knex('task_labels').where('task_id', req.params.id).del();
         if (labelIds.length > 0) {
-          await task.$relatedQuery('labels').relate(labelIds);
+          const inserts = labelIds.map((id) => ({ task_id: Number(req.params.id), label_id: id }));
+          await app.objection.knex('task_labels').insert(inserts);
         }
         req.flash('info', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (err) {
         req.log.error({ err, body: req.body }, 'Task update failed');
         req.flash('error', i18next.t('flash.tasks.update.error'));
-        const statuses = await app.objection.models.taskStatus.query();
-        const users = await app.objection.models.user.query();
-        const labels = await app.objection.models.label.query();
-        reply.render('tasks/edit', { task, statuses, users, labels, errors: err.data });
+        reply.redirect(app.reverse('tasks'));
       }
 
       return reply;
     })
     .post('/tasks/:id/delete', { name: 'deleteTask' }, async (req, reply) => {
       try {
-        await app.objection.models.task.query().deleteById(req.params.id);
+        await app.objection.knex('task_labels').where('task_id', req.params.id).del();
+        await app.objection.knex('tasks').where('id', req.params.id).del();
         req.flash('info', i18next.t('flash.tasks.delete.success'));
       } catch (err) {
         req.log.error({ err }, 'Task delete failed');
