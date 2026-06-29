@@ -106,7 +106,10 @@ const registerPlugins = async (app) => {
   });
 
   fastifyPassport.registerUserDeserializer(
-    (user) => app.objection.models.user.query().findById(user.id),
+    async (user) => {
+      const found = await app.objection.models.user.query().findById(user.id);
+      return found || false;
+    },
   );
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
   fastifyPassport.use(new FormStrategy('form', app));
