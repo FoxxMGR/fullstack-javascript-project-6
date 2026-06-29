@@ -81,6 +81,7 @@ export default {
       name: 'Наименование',
       firstName: 'Имя',
       lastName: 'Фамилия',
+      description: 'Описание',
       session: {
         new: {
           signIn: 'Вход',

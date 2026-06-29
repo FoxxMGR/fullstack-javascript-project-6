@@ -81,6 +81,7 @@ export default {
       name: 'Name',
       firstName: 'First Name',
       lastName: 'Last Name',
+      description: 'Description',
       session: {
         new: {
           signIn: 'Login',
