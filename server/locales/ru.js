@@ -2,7 +2,7 @@
 
 export default {
   translation: {
-    appName: 'Fastify Шаблон',
+    appName: 'Менеджер задач',
     flash: {
       session: {
         create: {
@@ -48,7 +48,7 @@ export default {
       },
       users: {
         id: 'ID',
-        name: 'Имя',
+        name: 'Полное имя',
         firstName: 'Имя',
         lastName: 'Фамилия',
         email: 'Email',
