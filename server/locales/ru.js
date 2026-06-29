@@ -21,6 +21,9 @@ export default {
         update: {
           success: 'Пользователь успешно изменён',
         },
+        delete: {
+          success: 'Пользователь успешно удалён',
+        },
       },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
@@ -49,9 +52,6 @@ export default {
         firstName: 'Имя',
         lastName: 'Фамилия',
         email: 'Email',
-        delete: {
-          success: 'Пользователь успешно удалён',
-        },
         edit: 'Изменить',
         delete: 'Удалить',
         createdAt: 'Дата создания',

@@ -21,6 +21,9 @@ export default {
         update: {
           success: 'User updated successfully',
         },
+        delete: {
+          success: 'User deleted successfully',
+        },
       },
       authError: 'Access denied! Please login',
     },
