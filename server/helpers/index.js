@@ -4,8 +4,12 @@ import i18next from 'i18next';
 import _ from 'lodash';
 
 export default (app) => ({
-  route(name) {
-    return app.reverse(name);
+  route(name, params = {}) {
+    let url = app.reverse(name);
+    Object.entries(params).forEach(([key, value]) => {
+      url = url.replace(`:${key}`, value);
+    });
+    return url;
   },
   t(key) {
     return i18next.t(key);
