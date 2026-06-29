@@ -8,8 +8,8 @@ export default (app) => {
       const query = app.objection.models.task.query()
         .withGraphJoined('[status, creator, executor, labels]');
 
-      const { statusId, executorId, creatorId } = req.query;
-      const filters = { statusId: statusId || '', executorId: executorId || '', creatorId: creatorId || '' };
+      const { statusId, executorId, creatorId, labelId } = req.query;
+      const filters = { statusId: statusId || '', executorId: executorId || '', creatorId: creatorId || '', labelId: labelId || '' };
 
       if (statusId) {
         query.where('tasks.status_id', statusId);
@@ -20,10 +20,14 @@ export default (app) => {
       if (creatorId) {
         query.where('tasks.creator_id', creatorId);
       }
+      if (labelId) {
+        query.whereIn('tasks.id', app.objection.knex('task_labels').select('task_id').where('label_id', labelId));
+      }
 
       const tasks = await query;
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
+      const labels = await app.objection.models.label.query();
       const currentUser = req.user || null;
       reply.render('tasks/index', { tasks, statuses, users, filters, currentUser });
       return reply;
