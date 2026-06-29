@@ -1,7 +1,7 @@
 extends ../layouts/application.pug
 
 block header
-  = t('views.labels.edit')
+  = t('views.labels.new.signUp')
 
 block content
   +formFor()(action=route('updateLabel', { id: label.id }) method='post')
