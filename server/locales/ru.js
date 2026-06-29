@@ -40,6 +40,7 @@ export default {
       },
       users: {
         id: 'ID',
+        name: 'Имя',
         firstName: 'Имя',
         lastName: 'Фамилия',
         email: 'Email',
