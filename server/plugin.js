@@ -11,6 +11,7 @@ import knex from 'knex';
 import qs from 'qs';
 import Pug from 'pug';
 import i18next from 'i18next';
+import rollbar from 'rollbar';
 
 import ru from './locales/ru.js';
 import en from './locales/en.js';
@@ -61,6 +62,22 @@ const setupLocalization = async () => {
         en,
       },
     });
+};
+
+const setupRollbar = (app) => {
+  if (!process.env.ROLLBAR_TOKEN) {
+    return;
+  }
+
+  const rollbarConfig = {
+    accessToken: process.env.ROLLBAR_TOKEN,
+    environment: mode,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+  };
+  const rollbarInstance = rollbar.init(rollbarConfig);
+
+  app.addHook('preHandler', rollbarInstance.errorHandler());
 };
 
 const addHooks = (app) => {
@@ -144,6 +161,7 @@ export default async (app, _options) => {
   await setupLocalization();
   setUpViews(app);
   setUpStaticAssets(app);
+  setupRollbar(app);
   addRoutes(app);
   addHooks(app);
 
