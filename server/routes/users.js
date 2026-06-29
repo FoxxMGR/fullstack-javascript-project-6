@@ -25,7 +25,7 @@ export default (app) => {
       } catch (err) {
         req.log.error({ err, body: req.body }, 'User creation failed');
         req.flash('error', i18next.t('flash.users.create.error'));
-        reply.render('users/new', { user, errors: err.data });
+        reply.redirect(app.reverse('users'));
       }
 
       return reply;

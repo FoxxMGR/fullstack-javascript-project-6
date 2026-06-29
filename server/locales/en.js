@@ -25,11 +25,23 @@ export default {
           success: 'User deleted successfully',
         },
       },
+      statuses: {
+        create: {
+          success: 'Status created successfully',
+        },
+        update: {
+          success: 'Status updated successfully',
+        },
+        delete: {
+          success: 'Status deleted successfully',
+        },
+      },
       authError: 'Access denied! Please login',
     },
     layouts: {
       application: {
         users: 'Users',
+        statuses: 'Statuses',
         signIn: 'Login',
         signUp: 'Register',
         signOut: 'Logout',
@@ -52,15 +64,23 @@ export default {
         firstName: 'First Name',
         lastName: 'Last Name',
         email: 'Email',
-        delete: {
-          success: 'User deleted successfully',
-        },
         edit: 'Edit',
         delete: 'Delete',
         createdAt: 'Created at',
         new: {
           submit: 'Register',
           signUp: 'Register',
+        },
+      },
+      statuses: {
+        id: 'ID',
+        name: 'Name',
+        edit: 'Edit',
+        delete: 'Delete',
+        createdAt: 'Created at',
+        new: {
+          submit: 'Save',
+          signUp: 'Create',
         },
       },
       welcome: {

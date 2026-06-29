@@ -25,11 +25,23 @@ export default {
           success: 'Пользователь успешно удалён',
         },
       },
+      statuses: {
+        create: {
+          success: 'Статус успешно создан',
+        },
+        update: {
+          success: 'Статус успешно изменён',
+        },
+        delete: {
+          success: 'Статус успешно удалён',
+        },
+      },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
       application: {
         users: 'Пользователи',
+        statuses: 'Статусы',
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
@@ -58,6 +70,17 @@ export default {
         new: {
           submit: 'Сохранить',
           signUp: 'Регистрация',
+        },
+      },
+      statuses: {
+        id: 'ID',
+        name: 'Название',
+        edit: 'Изменить',
+        delete: 'Удалить',
+        createdAt: 'Дата создания',
+        new: {
+          submit: 'Сохранить',
+          signUp: 'Создать',
         },
       },
       welcome: {
