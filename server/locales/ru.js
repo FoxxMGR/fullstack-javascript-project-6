@@ -80,7 +80,7 @@ export default {
         delete: 'Удалить',
         createdAt: 'Дата создания',
         new: {
-          submit: 'Сохранить',
+          submit: 'Создать',
           signUp: 'Создать статус',
         },
       },

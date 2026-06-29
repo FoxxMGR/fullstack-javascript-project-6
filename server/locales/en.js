@@ -80,7 +80,7 @@ export default {
         delete: 'Delete',
         createdAt: 'Created at',
         new: {
-          submit: 'Save',
+          submit: 'Create',
           signUp: 'Create',
         },
       },
