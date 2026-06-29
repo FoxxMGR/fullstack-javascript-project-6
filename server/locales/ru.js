@@ -80,7 +80,7 @@ export default {
         createdAt: 'Дата создания',
         new: {
           submit: 'Сохранить',
-          signUp: 'Создать',
+          signUp: 'Создать статус',
         },
       },
       welcome: {
