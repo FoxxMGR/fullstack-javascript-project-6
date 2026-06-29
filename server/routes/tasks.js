@@ -5,9 +5,27 @@ import i18next from 'i18next';
 export default (app) => {
   app
     .get('/tasks', { name: 'tasks' }, async (req, reply) => {
-      const tasks = await app.objection.models.task.query()
+      const query = app.objection.models.task.query()
         .withGraphJoined('[status, creator, executor, labels]');
-      reply.render('tasks/index', { tasks });
+
+      const { statusId, executorId, creatorId } = req.query;
+      const filters = { statusId: statusId || '', executorId: executorId || '', creatorId: creatorId || '' };
+
+      if (statusId) {
+        query.where('tasks.status_id', statusId);
+      }
+      if (executorId) {
+        query.where('tasks.executor_id', executorId);
+      }
+      if (creatorId) {
+        query.where('tasks.creator_id', creatorId);
+      }
+
+      const tasks = await query;
+      const statuses = await app.objection.models.taskStatus.query();
+      const users = await app.objection.models.user.query();
+      const currentUser = req.user || null;
+      reply.render('tasks/index', { tasks, statuses, users, filters, currentUser });
       return reply;
     })
     .get('/tasks/new', { name: 'newTask' }, async (req, reply) => {

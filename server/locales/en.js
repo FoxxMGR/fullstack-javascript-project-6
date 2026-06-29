@@ -134,6 +134,8 @@ export default {
         executor: 'Executor',
         executorId: 'Executor',
         labels: 'Labels',
+        isMyTasks: 'Only my tasks',
+        filter: 'Show',
         edit: 'Edit',
         delete: 'Delete',
         createdAt: 'Created at',

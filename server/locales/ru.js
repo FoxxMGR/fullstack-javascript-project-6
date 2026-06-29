@@ -134,6 +134,8 @@ export default {
         executor: 'Исполнитель',
         executorId: 'Исполнитель',
         labels: 'Метки',
+        isMyTasks: 'Только мои задачи',
+        filter: 'Показать',
         edit: 'Изменить',
         delete: 'Удалить',
         createdAt: 'Дата создания',

@@ -1,6 +1,30 @@
 extends ../layouts/application.pug
 
 block content
+  .card.mb-3
+    .card-body
+      form(method="get" action=route('tasks'))
+        .row
+          .col
+            .mb-3
+              label(for="executorId")= t('views.tasks.executor')
+              select.form-control(name="executorId" id="executorId" onchange="this.form.submit()")
+                option(value="")
+                each user in users
+                  option(value=user.id selected=(String(filters.executorId) === String(user.id)))= `${user.firstName} ${user.lastName}`
+          .col
+            .mb-3
+              label(for="statusId")= t('views.tasks.status')
+              select.form-control(name="statusId" id="statusId" onchange="this.form.submit()")
+                option(value="")
+                each status in statuses
+                  option(value=status.id selected=(String(filters.statusId) === String(status.id)))= status.name
+          .col
+            .mb-3
+              .form-check.mt-4
+                input.form-check-input(type="checkbox" name="creatorId" id="creatorId" value=currentUser ? currentUser.id : '' checked=!!filters.creatorId onchange="this.form.submit()")
+                label.form-check-label(for="creatorId")= t('views.tasks.isMyTasks')
+        button.btn.btn-primary(type="submit")= t('views.tasks.filter')
   a.btn.btn-primary.mb-3(href=route('newTask'))= t('views.tasks.new.signUp')
   table.table.table-striped
     thead
