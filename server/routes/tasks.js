@@ -48,6 +48,19 @@ export default (app) => {
       const labelIds = Array.isArray(rawLabels) ? rawLabels.map(Number) : (rawLabels ? [Number(rawLabels)] : []);
 
       try {
+        const errors = {};
+        if (!req.body.data.name || req.body.data.name.trim().length === 0) {
+          errors.name = [{ message: 'must NOT have fewer than 1 characters' }];
+        }
+        if (!req.body.data.statusId) {
+          errors.statusId = [{ message: 'must be specified' }];
+        }
+        if (Object.keys(errors).length > 0) {
+          const err = new Error('Validation failed');
+          err.data = errors;
+          throw err;
+        }
+
         const statusId = Number(req.body.data.statusId);
         const executorId = req.body.data.executorId ? Number(req.body.data.executorId) : null;
         const [taskId] = await app.objection.knex('tasks').insert({
@@ -67,8 +80,9 @@ export default (app) => {
         req.log.error({ err, body: req.body }, 'Task creation failed');
         const task = new app.objection.models.task();
         task.$set(req.body.data);
+        const errors = err.data || {};
         req.flash('error', i18next.t('flash.tasks.create.error'));
-        reply.redirect(app.reverse('tasks'));
+        reply.render('tasks/new', { task, statuses, users, labels, errors });
       }
 
       return reply;
