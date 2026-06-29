@@ -40,6 +40,8 @@ export default {
       },
       users: {
         id: 'ID',
+        firstName: 'First Name',
+        lastName: 'Last Name',
         email: 'Email',
         createdAt: 'Created at',
         new: {
