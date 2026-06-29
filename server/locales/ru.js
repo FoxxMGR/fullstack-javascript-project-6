@@ -49,6 +49,19 @@ export default {
           success: 'Метка успешно удалена',
         },
       },
+      tasks: {
+        create: {
+          success: 'Задача успешно создана',
+          error: 'Не удалось создать задачу',
+        },
+        update: {
+          success: 'Задача успешно изменена',
+          error: 'Не удалось изменить задачу',
+        },
+        delete: {
+          success: 'Задача успешно удалена',
+        },
+      },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
@@ -56,6 +69,7 @@ export default {
         users: 'Пользователи',
         statuses: 'Статусы',
         labels: 'Метки',
+        tasks: 'Задачи',
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
@@ -107,6 +121,24 @@ export default {
         new: {
           submit: 'Создать',
           signUp: 'Создать метку',
+        },
+      },
+      tasks: {
+        id: 'ID',
+        name: 'Название',
+        description: 'Описание',
+        status: 'Статус',
+        statusId: 'Статус',
+        creator: 'Автор',
+        executor: 'Исполнитель',
+        executorId: 'Исполнитель',
+        labels: 'Метки',
+        edit: 'Изменить',
+        delete: 'Удалить',
+        createdAt: 'Дата создания',
+        new: {
+          submit: 'Создать',
+          signUp: 'Создать задачу',
         },
       },
       welcome: {

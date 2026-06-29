@@ -1,0 +1,28 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.tasks.new.signUp')
+
+block content
+  +formFor()(action=route('tasks') method='post')
+    +input(task, 'name', errors)(type="text")
+    +input(task, 'description', errors)(type="text")
+    .mb-3
+      label(for="data_statusId")= t('views.tasks.status')
+      select.form-control(name="data[statusId]" id="data_statusId")
+        option(value="")
+        each status in statuses
+          option(value=status.id selected=(task.statusId === status.id))= status.name
+    .mb-3
+      label(for="data_executorId")= t('views.tasks.executor')
+      select.form-control(name="data[executorId]" id="data_executorId")
+        option(value="")
+        each user in users
+          option(value=user.id selected=(task.executorId === user.id))= `${user.firstName} ${user.lastName}`
+    .mb-3
+      label= t('views.tasks.labels')
+      each label in labels
+        .form-check
+          input.form-check-input(type="checkbox" name="data[labels]" value=label.id id=`label_${label.id}` checked=(task.labels && task.labels.some(l => l.id === label.id)))
+          label.form-check-label(for=`label_${label.id}`)= label.name
+    +submit(task)(value=t('views.tasks.new.submit'))

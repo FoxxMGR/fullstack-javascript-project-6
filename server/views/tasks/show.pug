@@ -1,0 +1,26 @@
+extends ../layouts/application.pug
+
+block header
+  = task.name
+
+block content
+  .mb-3
+    span.fw-bold= t('views.tasks.name') + ': '
+    = task.name
+  .mb-3
+    span.fw-bold= t('views.tasks.description') + ': '
+    = task.description || ''
+  .mb-3
+    span.fw-bold= t('views.tasks.status') + ': '
+    = task.status ? task.status.name : ''
+  .mb-3
+    span.fw-bold= t('views.tasks.creator') + ': '
+    = task.creator ? `${task.creator.firstName} ${task.creator.lastName}` : ''
+  .mb-3
+    span.fw-bold= t('views.tasks.executor') + ': '
+    = task.executor ? `${task.executor.firstName} ${task.executor.lastName}` : ''
+  .mb-3
+    span.fw-bold= t('views.tasks.labels') + ': '
+    = task.labels ? task.labels.map(l => l.name).join(', ') : ''
+  .mb-3
+    a(href=route('editTask', { id: task.id }))= t('views.tasks.edit')
