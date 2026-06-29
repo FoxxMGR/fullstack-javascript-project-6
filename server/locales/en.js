@@ -37,12 +37,25 @@ export default {
           success: 'Status deleted successfully',
         },
       },
+      labels: {
+        create: {
+          success: 'Label created successfully',
+          error: 'Failed to create label',
+        },
+        update: {
+          success: 'Label updated successfully',
+        },
+        delete: {
+          success: 'Label deleted successfully',
+        },
+      },
       authError: 'Access denied! Please login',
     },
     layouts: {
       application: {
         users: 'Users',
         statuses: 'Statuses',
+        labels: 'Labels',
         signIn: 'Login',
         signUp: 'Register',
         signOut: 'Logout',
@@ -82,7 +95,18 @@ export default {
         createdAt: 'Created at',
         new: {
           submit: 'Create',
-          signUp: 'Create',
+          signUp: 'Create status',
+        },
+      },
+      labels: {
+        id: 'ID',
+        name: 'Name',
+        edit: 'Edit',
+        delete: 'Delete',
+        createdAt: 'Created at',
+        new: {
+          submit: 'Create',
+          signUp: 'Create label',
         },
       },
       welcome: {

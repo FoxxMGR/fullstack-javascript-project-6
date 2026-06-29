@@ -37,12 +37,25 @@ export default {
           success: 'Статус успешно удалён',
         },
       },
+      labels: {
+        create: {
+          success: 'Метка успешно создана',
+          error: 'Не удалось создать метку',
+        },
+        update: {
+          success: 'Метка успешно изменена',
+        },
+        delete: {
+          success: 'Метка успешно удалена',
+        },
+      },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
       application: {
         users: 'Пользователи',
         statuses: 'Статусы',
+        labels: 'Метки',
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
@@ -83,6 +96,17 @@ export default {
         new: {
           submit: 'Создать',
           signUp: 'Создать статус',
+        },
+      },
+      labels: {
+        id: 'ID',
+        name: 'Наименование',
+        edit: 'Изменить',
+        delete: 'Удалить',
+        createdAt: 'Дата создания',
+        new: {
+          submit: 'Создать',
+          signUp: 'Создать метку',
         },
       },
       welcome: {
