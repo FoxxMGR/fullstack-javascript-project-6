@@ -32,6 +32,8 @@ export default {
     views: {
       email: 'Email',
       password: 'Password',
+      firstName: 'First Name',
+      lastName: 'Last Name',
       session: {
         new: {
           signIn: 'Login',
