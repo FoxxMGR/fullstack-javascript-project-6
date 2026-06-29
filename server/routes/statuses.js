@@ -24,6 +24,7 @@ export default (app) => {
         reply.redirect(app.reverse('statuses'));
       } catch (err) {
         req.log.error({ err, body: req.body }, 'Status creation failed');
+        req.flash('error', i18next.t('flash.statuses.create.error'));
         reply.render('statuses/new', { status, errors: err.data });
       }
 

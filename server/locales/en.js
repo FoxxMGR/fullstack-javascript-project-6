@@ -28,6 +28,7 @@ export default {
       statuses: {
         create: {
           success: 'Status created successfully',
+          error: 'Failed to create status',
         },
         update: {
           success: 'Status updated successfully',
