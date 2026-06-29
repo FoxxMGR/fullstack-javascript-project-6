@@ -29,7 +29,7 @@ export default (app) => {
       const users = await app.objection.models.user.query();
       const labels = await app.objection.models.label.query();
       const currentUser = req.user || null;
-      reply.render('tasks/index', { tasks, statuses, users, filters, currentUser });
+      reply.render('tasks/index', { tasks, statuses, users, labels, filters, currentUser });
       return reply;
     })
     .get('/tasks/new', { name: 'newTask' }, async (req, reply) => {
