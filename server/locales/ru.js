@@ -49,7 +49,11 @@ export default {
         firstName: 'Имя',
         lastName: 'Фамилия',
         email: 'Email',
+        delete: {
+          success: 'Пользователь успешно удалён',
+        },
         edit: 'Изменить',
+        delete: 'Удалить',
         createdAt: 'Дата создания',
         new: {
           submit: 'Сохранить',

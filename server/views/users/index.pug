@@ -18,3 +18,5 @@ block content
           td= formatDate(user.createdAt)
           td
             a(href=route('editUser', { id: user.id }))= t('views.users.edit')
+          td
+            +buttonTo(route('deleteUser', { id: user.id }), 'delete')(class="btn btn-link nav-link" value=t('views.users.delete'))

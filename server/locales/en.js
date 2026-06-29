@@ -49,7 +49,11 @@ export default {
         firstName: 'First Name',
         lastName: 'Last Name',
         email: 'Email',
+        delete: {
+          success: 'User deleted successfully',
+        },
         edit: 'Edit',
+        delete: 'Delete',
         createdAt: 'Created at',
         new: {
           submit: 'Register',
