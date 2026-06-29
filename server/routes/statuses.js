@@ -37,7 +37,7 @@ export default (app) => {
     .post('/statuses/:id', { name: 'updateStatus' }, async (req, reply) => {
       const status = await app.objection.models.taskStatus.query().findById(req.params.id);
       try {
-        await status.$query().patch(req.body.data);
+        await app.objection.models.taskStatus.query().patchAndFetchById(req.params.id, req.body.data);
         req.flash('info', i18next.t('flash.statuses.update.success'));
         reply.redirect(app.reverse('statuses'));
       } catch (err) {
