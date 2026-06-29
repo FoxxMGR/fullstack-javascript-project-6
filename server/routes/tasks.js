@@ -52,6 +52,9 @@ export default (app) => {
         if (!req.body.data.name || req.body.data.name.trim().length === 0) {
           errors.name = [{ message: 'must NOT have fewer than 1 characters' }];
         }
+        if (!req.body.data.description || req.body.data.description.trim().length === 0) {
+          errors.description = [{ message: 'must NOT have fewer than 1 characters' }];
+        }
         if (!req.body.data.statusId) {
           errors.statusId = [{ message: 'must be specified' }];
         }
