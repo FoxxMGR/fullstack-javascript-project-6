@@ -38,7 +38,7 @@ export default (app) => {
     .post('/labels/:id', { name: 'updateLabel' }, async (req, reply) => {
       const label = await app.objection.models.label.query().findById(req.params.id);
       try {
-        await label.$query().patch({ name: req.body.data.name });
+        await app.objection.models.label.query().where('id', req.params.id).patch({ name: req.body.data.name });
         req.flash('info', i18next.t('flash.labels.update.success'));
         reply.redirect(app.reverse('labels'));
       } catch (err) {
