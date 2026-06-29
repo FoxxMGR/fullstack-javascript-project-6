@@ -50,6 +50,7 @@ export default {
     views: {
       email: 'Email',
       password: 'Password',
+      name: 'Name',
       firstName: 'First Name',
       lastName: 'Last Name',
       session: {
