@@ -74,7 +74,7 @@ export default {
       },
       statuses: {
         id: 'ID',
-        name: 'Название',
+        name: 'Наименование',
         edit: 'Изменить',
         delete: 'Удалить',
         createdAt: 'Дата создания',
