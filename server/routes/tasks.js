@@ -69,30 +69,50 @@ export default (app) => {
       const labels = await app.objection.models.label.query();
       const labelIds = parseLabelIds(req.body.data.labels);
 
+      const errors = {};
+      if (!req.body.data.name || req.body.data.name.trim().length === 0) {
+        errors.name = [{ message: 'must NOT have fewer than 1 characters' }];
+      }
+      if (!req.body.data.description || req.body.data.description.trim().length === 0) {
+        errors.description = [{ message: 'must NOT have fewer than 1 characters' }];
+      }
+      if (!req.body.data.statusId) {
+        errors.statusId = [{ message: 'must be specified' }];
+      }
+
+      if (Object.keys(errors).length > 0) {
+        const task = new app.objection.models.task();
+        task.$set(req.body.data);
+        req.flash('error', i18next.t('flash.tasks.create.error'));
+        reply.render('tasks/new', {
+          task, statuses, users, labels, errors,
+        });
+        return reply;
+      }
+
       try {
-        const task = await app.objection.models.task.query().insert({
+        const statusId = Number(req.body.data.statusId);
+        const executorId = req.body.data.executorId
+          ? Number(req.body.data.executorId) : null;
+        const [taskId] = await app.objection.knex('tasks').insert({
           name: req.body.data.name,
           description: req.body.data.description || '',
-          statusId: Number(req.body.data.statusId),
-          creatorId: req.user.id,
-          executorId: req.body.data.executorId
-            ? Number(req.body.data.executorId) : null,
+          status_id: statusId,
+          creator_id: req.user.id,
+          executor_id: executorId,
         });
         if (labelIds.length > 0) {
-          const inserts = labelIds.map((id) => ({ task_id: task.id, label_id: id }));
+          const inserts = labelIds.map((id) => ({
+            task_id: taskId, label_id: id,
+          }));
           await app.objection.knex('task_labels').insert(inserts);
         }
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (err) {
         req.log.error({ err, body: req.body }, 'Task creation failed');
-        const task = new app.objection.models.task();
-        task.$set(req.body.data);
-        const errors = err.data || {};
         req.flash('error', i18next.t('flash.tasks.create.error'));
-        reply.render('tasks/new', {
-          task, statuses, users, labels, errors,
-        });
+        reply.redirect(app.reverse('tasks'));
       }
 
       return reply;
@@ -120,18 +140,19 @@ export default (app) => {
       const labelIds = parseLabelIds(req.body.data.labels);
 
       try {
-        const task = await app.objection.models.task.query()
-          .findById(req.params.id);
-        await task.$query().patch({
+        await app.objection.knex('tasks').where('id', req.params.id).update({
           name: req.body.data.name,
           description: req.body.data.description || '',
-          statusId: Number(req.body.data.statusId),
-          executorId: req.body.data.executorId
+          status_id: Number(req.body.data.statusId),
+          executor_id: req.body.data.executorId
             ? Number(req.body.data.executorId) : null,
         });
-        await task.$relatedQuery('labels').unrelate();
+        await app.objection.knex('task_labels')
+          .where('task_id', req.params.id).del();
         if (labelIds.length > 0) {
-          const inserts = labelIds.map((id) => ({ task_id: task.id, label_id: id }));
+          const inserts = labelIds.map((id) => ({
+            task_id: Number(req.params.id), label_id: id,
+          }));
           await app.objection.knex('task_labels').insert(inserts);
         }
         req.flash('info', i18next.t('flash.tasks.update.success'));
@@ -146,10 +167,10 @@ export default (app) => {
     })
     .post('/tasks/:id/delete', { name: 'deleteTask', preValidation: app.authenticate }, async (req, reply) => {
       try {
-        const task = await app.objection.models.task.query()
-          .findById(req.params.id);
-        await task.$relatedQuery('labels').unrelate();
-        await task.$query().delete();
+        await app.objection.knex('task_labels')
+          .where('task_id', req.params.id).del();
+        await app.objection.knex('tasks')
+          .where('id', req.params.id).del();
         req.flash('info', i18next.t('flash.tasks.delete.success'));
       } catch (err) {
         req.log.error({ err }, 'Task delete failed');
