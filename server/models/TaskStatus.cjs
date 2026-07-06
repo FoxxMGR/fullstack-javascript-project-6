@@ -17,4 +17,16 @@ module.exports = class TaskStatus extends BaseModel {
       },
     };
   }
-}
+
+  static get relationMappings() {
+    const Task = require('./Task.cjs');
+
+    return {
+      tasks: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: Task,
+        join: { from: 'task_statuses.id', to: 'tasks.status_id' },
+      },
+    };
+  }
+};

@@ -35,6 +35,7 @@ export default {
         },
         delete: {
           success: 'Status deleted successfully',
+          error: 'Failed to delete status. Status is used in tasks',
         },
       },
       labels: {

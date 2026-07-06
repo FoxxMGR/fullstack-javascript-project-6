@@ -29,3 +29,15 @@ mixin buttonTo(action, method)
   form(action=action, method="post")
     input(name="_method" type="hidden" value=method)
     input(type='submit')&attributes(attributes)
+
+mixin select(entity, propertyName, items, options = {})
+  - inputId = getInputId(propertyName)
+  - selectedValue = _.get(entity, propertyName)
+  - const getDisplay = (item) => options.displayKeys ? options.displayKeys.map((k) => item[k]).join(' ') : item[options.displayKey || 'name']
+  .mb-3
+    label(for=inputId)= t(`views.${propertyName}`)
+    select.form-control(name=getInputName(propertyName) id=inputId)&attributes(options.attributes || {})
+      if options.empty !== false
+        option(value="")
+      each item in items
+        option(value=item.id selected=(String(item.id) === String(selectedValue)))= getDisplay(item)

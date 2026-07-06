@@ -30,12 +30,12 @@ export default (app) => {
 
       return reply;
     })
-    .get('/users/:id/edit', { name: 'editUser' }, async (req, reply) => {
+    .get('/users/:id/edit', { name: 'editUser', preValidation: app.authenticate }, async (req, reply) => {
       const user = await app.objection.models.user.query().findById(req.params.id);
       reply.render('users/edit', { user });
       return reply;
     })
-    .post('/users/:id', { name: 'updateUser' }, async (req, reply) => {
+    .post('/users/:id', { name: 'updateUser', preValidation: app.authenticate }, async (req, reply) => {
       const user = await app.objection.models.user.query().findById(req.params.id);
       try {
         await user.$query().patch(req.body.data);
@@ -48,7 +48,7 @@ export default (app) => {
 
       return reply;
     })
-    .post('/users/:id/delete', { name: 'deleteUser' }, async (req, reply) => {
+    .post('/users/:id/delete', { name: 'deleteUser', preValidation: app.authenticate }, async (req, reply) => {
       try {
         await app.objection.models.user.query().deleteById(req.params.id);
         req.flash('info', i18next.t('flash.users.delete.success'));

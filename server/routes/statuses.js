@@ -9,11 +9,11 @@ export default (app) => {
       reply.render('statuses/index', { statuses });
       return reply;
     })
-    .get('/statuses/new', { name: 'newStatus' }, (req, reply) => {
+    .get('/statuses/new', { name: 'newStatus', preValidation: app.authenticate }, (req, reply) => {
       const status = new app.objection.models.taskStatus();
       reply.render('statuses/new', { status });
     })
-    .post('/statuses', async (req, reply) => {
+    .post('/statuses', { preValidation: app.authenticate }, async (req, reply) => {
       const status = new app.objection.models.taskStatus();
       status.$set(req.body.data);
 
@@ -30,12 +30,12 @@ export default (app) => {
 
       return reply;
     })
-    .get('/statuses/:id/edit', { name: 'editStatus' }, async (req, reply) => {
+    .get('/statuses/:id/edit', { name: 'editStatus', preValidation: app.authenticate }, async (req, reply) => {
       const status = await app.objection.models.taskStatus.query().findById(req.params.id);
       reply.render('statuses/edit', { status });
       return reply;
     })
-    .post('/statuses/:id', { name: 'updateStatus' }, async (req, reply) => {
+    .post('/statuses/:id', { name: 'updateStatus', preValidation: app.authenticate }, async (req, reply) => {
       const status = await app.objection.models.taskStatus.query().findById(req.params.id);
       try {
         await status.$query().patch({ name: req.body.data.name });
@@ -48,9 +48,16 @@ export default (app) => {
 
       return reply;
     })
-    .post('/statuses/:id/delete', { name: 'deleteStatus' }, async (req, reply) => {
+    .post('/statuses/:id/delete', { name: 'deleteStatus', preValidation: app.authenticate }, async (req, reply) => {
       try {
-        await app.objection.models.taskStatus.query().deleteById(req.params.id);
+        const status = await app.objection.models.taskStatus.query().findById(req.params.id);
+        const hasTasks = await status.$relatedQuery('tasks').first();
+        if (hasTasks) {
+          req.flash('error', i18next.t('flash.statuses.delete.error'));
+          reply.redirect(app.reverse('statuses'));
+          return reply;
+        }
+        await status.$query().delete();
         req.flash('info', i18next.t('flash.statuses.delete.success'));
       } catch (err) {
         req.log.error({ err }, 'Status delete failed');
