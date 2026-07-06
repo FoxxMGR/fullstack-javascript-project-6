@@ -174,6 +174,7 @@ export default (app) => {
         req.flash('info', i18next.t('flash.tasks.delete.success'));
       } catch (err) {
         req.log.error({ err }, 'Task delete failed');
+        req.flash('error', i18next.t('flash.tasks.delete.error'));
       }
 
       reply.redirect(app.reverse('tasks'));

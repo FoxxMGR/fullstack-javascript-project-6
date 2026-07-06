@@ -50,10 +50,20 @@ export default (app) => {
     })
     .post('/users/:id/delete', { name: 'deleteUser', preValidation: app.authenticate }, async (req, reply) => {
       try {
-        await app.objection.models.user.query().deleteById(req.params.id);
+        const user = await app.objection.models.user.query()
+          .findById(req.params.id);
+        const hasCreated = await user.$relatedQuery('createdTasks').first();
+        const hasExecuted = await user.$relatedQuery('executedTasks').first();
+        if (hasCreated || hasExecuted) {
+          req.flash('error', i18next.t('flash.users.delete.error'));
+          reply.redirect(app.reverse('users'));
+          return reply;
+        }
+        await user.$query().delete();
         req.flash('info', i18next.t('flash.users.delete.success'));
       } catch (err) {
         req.log.error({ err }, 'User delete failed');
+        req.flash('error', i18next.t('flash.users.delete.error'));
       }
 
       reply.redirect(app.reverse('users'));

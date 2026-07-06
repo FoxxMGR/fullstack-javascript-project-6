@@ -23,6 +23,7 @@ export default {
         },
         delete: {
           success: 'User deleted successfully',
+          error: 'Failed to delete user. User is used in tasks',
         },
       },
       statuses: {
@@ -48,6 +49,7 @@ export default {
         },
         delete: {
           success: 'Label deleted successfully',
+          error: 'Failed to delete label',
         },
       },
       tasks: {
@@ -61,6 +63,7 @@ export default {
         },
         delete: {
           success: 'Task deleted successfully',
+          error: 'Failed to delete task',
         },
       },
       authError: 'Access denied! Please login',
@@ -128,7 +131,9 @@ export default {
       tasks: {
         id: 'ID',
         name: 'Name',
-        description: 'Description',
+      description: 'Description',
+      statusId: 'Status',
+      executorId: 'Executor',
         status: 'Status',
         statusId: 'Status',
         creator: 'Creator',

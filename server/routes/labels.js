@@ -55,6 +55,7 @@ export default (app) => {
         req.flash('info', i18next.t('flash.labels.delete.success'));
       } catch (err) {
         req.log.error({ err }, 'Label delete failed');
+        req.flash('error', i18next.t('flash.labels.delete.error'));
       }
 
       reply.redirect(app.reverse('labels'));

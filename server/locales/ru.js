@@ -23,6 +23,7 @@ export default {
         },
         delete: {
           success: 'Пользователь успешно удалён',
+          error: 'Не удалось удалить пользователя. Пользователь используется в задачах',
         },
       },
       statuses: {
@@ -48,6 +49,7 @@ export default {
         },
         delete: {
           success: 'Метка успешно удалена',
+          error: 'Не удалось удалить метку',
         },
       },
       tasks: {
@@ -61,6 +63,7 @@ export default {
         },
         delete: {
           success: 'Задача успешно удалена',
+          error: 'Не удалось удалить задачу',
         },
       },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
@@ -128,7 +131,9 @@ export default {
       tasks: {
         id: 'ID',
         name: 'Название',
-        description: 'Описание',
+      description: 'Описание',
+      statusId: 'Статус',
+      executorId: 'Исполнитель',
         status: 'Статус',
         statusId: 'Статус',
         creator: 'Автор',
