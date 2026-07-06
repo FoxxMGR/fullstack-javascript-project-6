@@ -8,6 +8,20 @@ const parseLabelIds = (rawLabels) => {
   return [];
 };
 
+const loadFormData = async (app) => {
+  const statuses = await app.objection.models.taskStatus.query();
+  const users = await app.objection.models.user.query();
+  const labels = await app.objection.models.label.query();
+  return { statuses, users, labels };
+};
+
+const insertLabels = async (knex, taskId, labelIds) => {
+  if (labelIds.length > 0) {
+    const inserts = labelIds.map((id) => ({ task_id: taskId, label_id: id }));
+    await knex('task_labels').insert(inserts);
+  }
+};
+
 const applyFilters = (query, filters, knex) => {
   query.modify((builder) => {
     if (filters.statusId) {
@@ -44,9 +58,7 @@ export default (app) => {
       applyFilters(query, filters, app.objection.knex);
 
       const tasks = await query;
-      const statuses = await app.objection.models.taskStatus.query();
-      const users = await app.objection.models.user.query();
-      const labels = await app.objection.models.label.query();
+      const { statuses, users, labels } = await loadFormData(app);
       const currentUser = req.user || null;
       reply.render('tasks/index', {
         tasks, statuses, users, labels, filters, currentUser,
@@ -55,18 +67,14 @@ export default (app) => {
     })
     .get('/tasks/new', { name: 'newTask', preValidation: app.authenticate }, async (req, reply) => {
       const task = new app.objection.models.task();
-      const statuses = await app.objection.models.taskStatus.query();
-      const users = await app.objection.models.user.query();
-      const labels = await app.objection.models.label.query();
+      const { statuses, users, labels } = await loadFormData(app);
       reply.render('tasks/new', {
         task, statuses, users, labels,
       });
       return reply;
     })
     .post('/tasks', { name: 'createTask', preValidation: app.authenticate }, async (req, reply) => {
-      const statuses = await app.objection.models.taskStatus.query();
-      const users = await app.objection.models.user.query();
-      const labels = await app.objection.models.label.query();
+      const { statuses, users, labels } = await loadFormData(app);
       const labelIds = parseLabelIds(req.body.data.labels);
 
       const errors = {};
@@ -101,12 +109,7 @@ export default (app) => {
           creator_id: req.user.id,
           executor_id: executorId,
         });
-        if (labelIds.length > 0) {
-          const inserts = labelIds.map((id) => ({
-            task_id: taskId, label_id: id,
-          }));
-          await app.objection.knex('task_labels').insert(inserts);
-        }
+        await insertLabels(app.objection.knex, taskId, labelIds);
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (err) {
@@ -128,9 +131,7 @@ export default (app) => {
       const task = await app.objection.models.task.query()
         .findById(req.params.id)
         .withGraphJoined('[labels]');
-      const statuses = await app.objection.models.taskStatus.query();
-      const users = await app.objection.models.user.query();
-      const labels = await app.objection.models.label.query();
+      const { statuses, users, labels } = await loadFormData(app);
       reply.render('tasks/edit', {
         task, statuses, users, labels,
       });
@@ -149,12 +150,7 @@ export default (app) => {
         });
         await app.objection.knex('task_labels')
           .where('task_id', req.params.id).del();
-        if (labelIds.length > 0) {
-          const inserts = labelIds.map((id) => ({
-            task_id: Number(req.params.id), label_id: id,
-          }));
-          await app.objection.knex('task_labels').insert(inserts);
-        }
+        await insertLabels(app.objection.knex, Number(req.params.id), labelIds);
         req.flash('info', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (err) {
