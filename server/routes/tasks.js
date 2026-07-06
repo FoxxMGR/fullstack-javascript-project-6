@@ -22,6 +22,28 @@ const insertLabels = async (knex, taskId, labelIds) => {
   }
 };
 
+const validateTaskData = (data) => {
+  const errors = {};
+  if (!data.name || data.name.trim().length === 0) {
+    errors.name = [{ message: 'must NOT have fewer than 1 characters' }];
+  }
+  if (!data.description || data.description.trim().length === 0) {
+    errors.description = [{ message: 'must NOT have fewer than 1 characters' }];
+  }
+  if (!data.statusId) {
+    errors.statusId = [{ message: 'must be specified' }];
+  }
+  return errors;
+};
+
+const buildTaskData = (data, creatorId) => ({
+  name: data.name,
+  description: data.description || '',
+  status_id: Number(data.statusId),
+  creator_id: creatorId,
+  executor_id: data.executorId ? Number(data.executorId) : null,
+});
+
 const applyFilters = (query, filters, knex) => {
   query.modify((builder) => {
     if (filters.statusId) {
@@ -77,17 +99,7 @@ export default (app) => {
       const { statuses, users, labels } = await loadFormData(app);
       const labelIds = parseLabelIds(req.body.data.labels);
 
-      const errors = {};
-      if (!req.body.data.name || req.body.data.name.trim().length === 0) {
-        errors.name = [{ message: 'must NOT have fewer than 1 characters' }];
-      }
-      if (!req.body.data.description || req.body.data.description.trim().length === 0) {
-        errors.description = [{ message: 'must NOT have fewer than 1 characters' }];
-      }
-      if (!req.body.data.statusId) {
-        errors.statusId = [{ message: 'must be specified' }];
-      }
-
+      const errors = validateTaskData(req.body.data);
       if (Object.keys(errors).length > 0) {
         const task = new app.objection.models.task();
         task.$set(req.body.data);
@@ -99,16 +111,8 @@ export default (app) => {
       }
 
       try {
-        const statusId = Number(req.body.data.statusId);
-        const executorId = req.body.data.executorId
-          ? Number(req.body.data.executorId) : null;
-        const [taskId] = await app.objection.knex('tasks').insert({
-          name: req.body.data.name,
-          description: req.body.data.description || '',
-          status_id: statusId,
-          creator_id: req.user.id,
-          executor_id: executorId,
-        });
+        const [taskId] = await app.objection.knex('tasks')
+          .insert(buildTaskData(req.body.data, req.user.id));
         await insertLabels(app.objection.knex, taskId, labelIds);
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
@@ -141,13 +145,10 @@ export default (app) => {
       const labelIds = parseLabelIds(req.body.data.labels);
 
       try {
-        await app.objection.knex('tasks').where('id', req.params.id).update({
-          name: req.body.data.name,
-          description: req.body.data.description || '',
-          status_id: Number(req.body.data.statusId),
-          executor_id: req.body.data.executorId
-            ? Number(req.body.data.executorId) : null,
-        });
+        const taskData = buildTaskData(req.body.data);
+        delete taskData.creator_id;
+        await app.objection.knex('tasks')
+          .where('id', req.params.id).update(taskData);
         await app.objection.knex('task_labels')
           .where('task_id', req.params.id).del();
         await insertLabels(app.objection.knex, Number(req.params.id), labelIds);
