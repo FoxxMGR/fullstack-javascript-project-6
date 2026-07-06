@@ -79,7 +79,8 @@ export default (app) => {
             ? Number(req.body.data.executorId) : null,
         });
         if (labelIds.length > 0) {
-          await task.$relatedQuery('labels').relate(labelIds);
+          const inserts = labelIds.map((id) => ({ task_id: task.id, label_id: id }));
+          await app.objection.knex('task_labels').insert(inserts);
         }
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
@@ -130,7 +131,8 @@ export default (app) => {
         });
         await task.$relatedQuery('labels').unrelate();
         if (labelIds.length > 0) {
-          await task.$relatedQuery('labels').relate(labelIds);
+          const inserts = labelIds.map((id) => ({ task_id: task.id, label_id: id }));
+          await app.objection.knex('task_labels').insert(inserts);
         }
         req.flash('info', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
