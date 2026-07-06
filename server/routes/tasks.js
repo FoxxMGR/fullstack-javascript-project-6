@@ -8,7 +8,7 @@ const parseLabelIds = (rawLabels) => {
   return [];
 };
 
-const applyFilters = (query, filters) => {
+const applyFilters = (query, filters, knex) => {
   query.modify((builder) => {
     if (filters.statusId) {
       builder.where('tasks.status_id', filters.statusId);
@@ -20,7 +20,7 @@ const applyFilters = (query, filters) => {
       builder.where('tasks.creator_id', filters.creatorId);
     }
     if (filters.labelId) {
-      builder.whereIn('tasks.id', (kb) => kb('task_labels')
+      builder.whereIn('tasks.id', knex('task_labels')
         .select('task_id').where('label_id', filters.labelId));
     }
   });
@@ -41,7 +41,7 @@ export default (app) => {
 
       const query = app.objection.models.task.query()
         .withGraphJoined('[status, creator, executor, labels]');
-      applyFilters(query, filters);
+      applyFilters(query, filters, app.objection.knex);
 
       const tasks = await query;
       const statuses = await app.objection.models.taskStatus.query();
