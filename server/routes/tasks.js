@@ -57,9 +57,9 @@ export default (app) => {
         labelIds: parseLabelIds(rawLabelIds),
       };
 
-      const query = app.objection.models.task.query()
-        .withGraphJoined('[status, creator, executor, labels]');
+      const query = app.objection.models.task.query();
       app.objection.models.task.applyFilters(query, filters, app.objection.knex);
+      query.withGraphJoined('[status, creator, executor, labels]');
 
       const tasks = await query;
       const { statuses, users, labels } = await loadFormData(app);
