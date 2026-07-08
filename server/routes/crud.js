@@ -3,7 +3,7 @@
 import i18next from 'i18next';
 
 const singularize = (entity) => {
-  if (entity.endsWith('ses')) return entity.slice(0, -1);
+  if (entity.endsWith('ses')) return entity.slice(0, -2);
   if (entity.endsWith('ies')) return `${entity.slice(0, -3)}y`;
   if (entity.endsWith('s')) return entity.slice(0, -1);
   return entity;
