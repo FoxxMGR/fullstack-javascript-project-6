@@ -23,20 +23,22 @@ module.exports = class Task extends BaseModel {
   }
 
   static applyFilters(query, filters, knex) {
-    if (filters.statusId) {
-      query.where('tasks.status_id', filters.statusId);
-    }
-    if (filters.executorId) {
-      query.where('tasks.executor_id', filters.executorId);
-    }
-    if (filters.creatorId) {
-      query.where('tasks.creator_id', filters.creatorId);
-    }
-    if (filters.labelIds && filters.labelIds.length > 0) {
-      query.whereIn('tasks.id', knex('task_labels')
-        .select('task_id')
-        .whereIn('label_id', filters.labelIds));
-    }
+    query.modify((builder) => {
+      if (filters.statusId) {
+        builder.where('tasks.status_id', filters.statusId);
+      }
+      if (filters.executorId) {
+        builder.where('tasks.executor_id', filters.executorId);
+      }
+      if (filters.creatorId) {
+        builder.where('tasks.creator_id', filters.creatorId);
+      }
+      if (filters.labelIds && filters.labelIds.length > 0) {
+        builder.whereIn('tasks.id', knex('task_labels')
+          .select('task_id')
+          .whereIn('label_id', filters.labelIds));
+      }
+    });
   }
 
   static get relationMappings() {

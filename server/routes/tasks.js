@@ -57,9 +57,23 @@ export default (app) => {
         labelIds: parseLabelIds(rawLabelIds),
       };
 
-      const query = app.objection.models.task.query();
-      app.objection.models.task.applyFilters(query, filters, app.objection.knex);
-      query.withGraphJoined('[status, creator, executor, labels]');
+      const query = app.objection.models.task.query()
+        .withGraphJoined('[status, creator, executor, labels]');
+
+      if (filters.statusId) {
+        query.where('tasks.status_id', filters.statusId);
+      }
+      if (filters.executorId) {
+        query.where('tasks.executor_id', filters.executorId);
+      }
+      if (filters.creatorId) {
+        query.where('tasks.creator_id', filters.creatorId);
+      }
+      if (filters.labelIds.length > 0) {
+        query.whereIn('tasks.id', app.objection.knex('task_labels')
+          .select('task_id')
+          .whereIn('label_id', filters.labelIds));
+      }
 
       const tasks = await query;
       const { statuses, users, labels } = await loadFormData(app);
