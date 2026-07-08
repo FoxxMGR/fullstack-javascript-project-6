@@ -31,14 +31,28 @@ export default (app) => {
       return reply;
     })
     .get('/users/:id/edit', { name: 'editUser', preValidation: app.authenticate }, async (req, reply) => {
-      const user = await app.objection.models.user.query().findById(req.params.id);
+      if (Number(req.params.id) !== req.user.id) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('users'));
+        return reply;
+      }
+      const user = await app.objection.models.user.query()
+        .findById(req.params.id);
       reply.render('users/edit', { user });
       return reply;
     })
     .post('/users/:id', { name: 'updateUser', preValidation: app.authenticate }, async (req, reply) => {
-      const user = await app.objection.models.user.query().findById(req.params.id);
+      if (Number(req.params.id) !== req.user.id) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('users'));
+        return reply;
+      }
+      const user = await app.objection.models.user.query()
+        .findById(req.params.id);
       try {
-        await user.$query().patch(req.body.data);
+        const { password, ...rest } = req.body.data;
+        const patchData = password ? req.body.data : rest;
+        await user.$query().patch(patchData);
         req.flash('info', i18next.t('flash.users.update.success'));
         reply.redirect(app.reverse('users'));
       } catch (err) {

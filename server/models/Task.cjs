@@ -22,6 +22,25 @@ module.exports = class Task extends BaseModel {
     };
   }
 
+  static applyFilters(query, filters, knex) {
+    query.modify((builder) => {
+      if (filters.statusId) {
+        builder.where('tasks.status_id', filters.statusId);
+      }
+      if (filters.executorId) {
+        builder.where('tasks.executor_id', filters.executorId);
+      }
+      if (filters.creatorId) {
+        builder.where('tasks.creator_id', filters.creatorId);
+      }
+      if (filters.labelIds && filters.labelIds.length > 0) {
+        builder.whereIn('tasks.id', knex('task_labels')
+          .select('task_id')
+          .whereIn('label_id', filters.labelIds));
+      }
+    });
+  }
+
   static get relationMappings() {
     const User = require('./User.cjs');
     const TaskStatus = require('./TaskStatus.cjs');

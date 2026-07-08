@@ -19,10 +19,12 @@ block content
                 option(value="")
                 each status in statuses
                   option(value=status.id selected=(String(filters.statusId) === String(status.id)))= status.name
-              select.form-control(name="labelId" id="data_label")
-                option(value="")
+          .col
+            .mb-3
+              label(for="labelIds")= t('views.tasks.labels')
+              select.form-control(name="labelIds" id="data_label" multiple)
                 each label in labels
-                  option(value=label.id selected=(String(filters.labelId) === String(label.id)))= label.name
+                  option(value=label.id selected=(filters.labelIds && filters.labelIds.includes(String(label.id))))= label.name
           .col
             .mb-3
               .form-check.mt-4

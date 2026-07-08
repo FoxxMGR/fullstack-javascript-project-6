@@ -105,6 +105,8 @@ export default {
           submit: 'Register',
           signUp: 'Register',
         },
+        editHeader: 'Edit user',
+        editSubmit: 'Edit',
       },
       statuses: {
         id: 'ID',
@@ -116,6 +118,8 @@ export default {
           submit: 'Create',
           signUp: 'Create status',
         },
+        editHeader: 'Edit status',
+        editSubmit: 'Edit',
       },
       labels: {
         id: 'ID',
@@ -127,6 +131,8 @@ export default {
           submit: 'Create',
           signUp: 'Create label',
         },
+        editHeader: 'Edit label',
+        editSubmit: 'Edit',
       },
       tasks: {
         id: 'ID',
@@ -149,6 +155,8 @@ export default {
           submit: 'Create',
           signUp: 'Create task',
         },
+        editHeader: 'Edit task',
+        editSubmit: 'Edit',
       },
       welcome: {
         index: {

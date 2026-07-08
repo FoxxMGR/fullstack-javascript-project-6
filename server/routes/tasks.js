@@ -44,40 +44,22 @@ const buildTaskData = (data, creatorId) => ({
   executor_id: data.executorId ? Number(data.executorId) : null,
 });
 
-const applyFilters = (query, filters, knex) => {
-  query.modify((builder) => {
-    if (filters.statusId) {
-      builder.where('tasks.status_id', filters.statusId);
-    }
-    if (filters.executorId) {
-      builder.where('tasks.executor_id', filters.executorId);
-    }
-    if (filters.creatorId) {
-      builder.where('tasks.creator_id', filters.creatorId);
-    }
-    if (filters.labelId) {
-      builder.whereIn('tasks.id', knex('task_labels')
-        .select('task_id').where('label_id', filters.labelId));
-    }
-  });
-};
-
 export default (app) => {
   app
     .get('/tasks', { name: 'tasks' }, async (req, reply) => {
       const {
-        statusId, executorId, creatorId, labelId,
+        statusId, executorId, creatorId, labelIds: rawLabelIds,
       } = req.query;
       const filters = {
         statusId: statusId || '',
         executorId: executorId || '',
         creatorId: creatorId || '',
-        labelId: labelId || '',
+        labelIds: parseLabelIds(rawLabelIds),
       };
 
       const query = app.objection.models.task.query()
         .withGraphJoined('[status, creator, executor, labels]');
-      applyFilters(query, filters, app.objection.knex);
+      app.objection.models.task.applyFilters(query, filters, app.objection.knex);
 
       const tasks = await query;
       const { statuses, users, labels } = await loadFormData(app);

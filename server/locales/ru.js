@@ -105,6 +105,8 @@ export default {
           submit: 'Сохранить',
           signUp: 'Регистрация',
         },
+        editHeader: 'Изменить пользователя',
+        editSubmit: 'Изменить',
       },
       statuses: {
         id: 'ID',
@@ -116,6 +118,8 @@ export default {
           submit: 'Создать',
           signUp: 'Создать статус',
         },
+        editHeader: 'Изменить статус',
+        editSubmit: 'Изменить',
       },
       labels: {
         id: 'ID',
@@ -127,6 +131,8 @@ export default {
           submit: 'Создать',
           signUp: 'Создать метку',
         },
+        editHeader: 'Изменить метку',
+        editSubmit: 'Изменить',
       },
       tasks: {
         id: 'ID',
@@ -149,6 +155,8 @@ export default {
           submit: 'Создать',
           signUp: 'Создать задачу',
         },
+        editHeader: 'Изменить задачу',
+        editSubmit: 'Изменить',
       },
       welcome: {
         index: {

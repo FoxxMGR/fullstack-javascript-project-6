@@ -1,7 +1,7 @@
 // @ts-check
 
-const BaseModel = require('./BaseModel.cjs');
 const objectionUnique = require('objection-unique');
+const BaseModel = require('./BaseModel.cjs');
 const encrypt = require('../lib/secure.cjs');
 
 const unique = objectionUnique({ fields: ['email'] });
@@ -14,7 +14,7 @@ module.exports = class User extends unique(BaseModel) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['email', 'password', 'firstName', 'lastName'],
+      required: ['email', 'firstName', 'lastName'],
       properties: {
         id: { type: 'integer' },
         email: { type: 'string', minLength: 1 },
@@ -49,4 +49,4 @@ module.exports = class User extends unique(BaseModel) {
   verifyPassword(password) {
     return encrypt(password) === this.passwordDigest;
   }
-}
+};

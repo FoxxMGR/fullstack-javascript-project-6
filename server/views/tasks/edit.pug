@@ -1,8 +1,8 @@
 extends ../layouts/application.pug
 
 block header
-  = t('views.tasks.new.signUp')
+  = t('views.tasks.editHeader')
 
 block content
   +formFor()(action=route('updateTask', { id: task.id }) method='post')
-    +taskForm(task, statuses, users, labels, { submitKey: 'views.tasks.edit', selectedLabels: task.labels })
+    +taskForm(task, statuses, users, labels, { submitKey: 'views.tasks.editSubmit', selectedLabels: task.labels })
