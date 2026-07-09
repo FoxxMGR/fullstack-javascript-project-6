@@ -2,6 +2,12 @@
 
 import i18next from 'i18next';
 
+const parseLabelIds = (rawLabels) => {
+  if (Array.isArray(rawLabels)) return rawLabels.map(Number);
+  if (rawLabels) return [Number(rawLabels)];
+  return [];
+};
+
 const loadFormData = async (app) => {
   const statuses = await app.objection.models.taskStatus.query();
   const users = await app.objection.models.user.query();
