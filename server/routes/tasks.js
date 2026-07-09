@@ -57,18 +57,12 @@ export default (app) => {
         labelId: labelId || '',
       };
 
-      console.log('FILTER DEBUG:', JSON.stringify(req.query), JSON.stringify(filters));
-
       const query = app.objection.models.task.query();
       app.objection.models.task.applyFilters(query, filters, app.objection.knex);
-
-      const rawSql = query.toKnexQuery().toSQL();
-      console.log('SQL:', rawSql.sql, rawSql.bindings);
 
       query.withGraphJoined('[status, creator, executor, labels]');
 
       const tasks = await query;
-      console.log('TASKS COUNT:', tasks.length, tasks.map((t) => t.id));
       const { statuses, users, labels } = await loadFormData(app);
       const currentUser = req.user || null;
       reply.render('tasks/index', {
