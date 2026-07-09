@@ -2,12 +2,6 @@
 
 import i18next from 'i18next';
 
-const parseLabelIds = (rawLabels) => {
-  if (Array.isArray(rawLabels)) return rawLabels.map(Number);
-  if (rawLabels) return [Number(rawLabels)];
-  return [];
-};
-
 const loadFormData = async (app) => {
   const statuses = await app.objection.models.taskStatus.query();
   const users = await app.objection.models.user.query();
@@ -48,32 +42,18 @@ export default (app) => {
   app
     .get('/tasks', { name: 'tasks' }, async (req, reply) => {
       const {
-        statusId, executorId, creatorId, labelIds: rawLabelIds,
+        statusId, executorId, creatorId, labelId,
       } = req.query;
       const filters = {
         statusId: statusId || '',
         executorId: executorId || '',
         creatorId: creatorId || '',
-        labelIds: parseLabelIds(rawLabelIds),
+        labelId: labelId || '',
       };
 
       const query = app.objection.models.task.query()
         .withGraphJoined('[status, creator, executor, labels]');
-
-      if (filters.statusId) {
-        query.where('tasks.status_id', filters.statusId);
-      }
-      if (filters.executorId) {
-        query.where('tasks.executor_id', filters.executorId);
-      }
-      if (filters.creatorId) {
-        query.where('tasks.creator_id', filters.creatorId);
-      }
-      if (filters.labelIds.length > 0) {
-        query.whereIn('tasks.id', app.objection.knex('task_labels')
-          .select('task_id')
-          .whereIn('label_id', filters.labelIds));
-      }
+      app.objection.models.task.applyFilters(query, filters, app.objection.knex);
 
       const tasks = await query;
       const { statuses, users, labels } = await loadFormData(app);

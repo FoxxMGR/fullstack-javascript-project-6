@@ -33,10 +33,10 @@ module.exports = class Task extends BaseModel {
       if (filters.creatorId) {
         builder.where('tasks.creator_id', filters.creatorId);
       }
-      if (filters.labelIds && filters.labelIds.length > 0) {
+      if (filters.labelId) {
         builder.whereIn('tasks.id', knex('task_labels')
           .select('task_id')
-          .whereIn('label_id', filters.labelIds));
+          .where('label_id', filters.labelId));
       }
     });
   }
